@@ -15,14 +15,14 @@ class IndexController extends StudipController {
 
         //PageLayout::addStylesheet($this->plugin->getPluginURL().'/assets/style.css');
 
-        $sidebar = Sidebar::Get();
-
-        $navcreate = new ActionsWidget();
-        $navcreate->addLink(_('Neuer Workshop'),
-                              $this->url_for('index/new'),
-                              Icon::create('seminar+add', 'clickable'))->asDialog('size=big');
-        
-        $sidebar->addWidget($navcreate);
+//        $sidebar = Sidebar::Get();
+//
+//        $navcreate = new ActionsWidget();
+//        $navcreate->addLink(_('Neuer Workshop'),
+//                              $this->url_for('index/new'),
+//                              Icon::create('seminar+add', 'clickable'))->asDialog('size=big');
+//        
+//        $sidebar->addWidget($navcreate);
         
     }
 
