@@ -29,7 +29,7 @@
         </th>
        
         <th data-sort="false">
-           <?= _('Teilnehmende') ?>
+           <?= _('Teilnehmende/Max') ?>
         </th>
         <th data-sort="text" style='width:5%'>
            <?= _('Sichtbar') ?>
@@ -65,7 +65,11 @@
         <td><?= substr($course->name, 0, 3)?></td>
         <td><a target='_blank' href="<?= URLHelper::getLink("seminar_main.php?cid=" . $course->id)?>"><?= $course->name?></a></td>
         <td><?= $course->countMembersWithStatus('dozent')?></td>
-        <td><a target='_blank' href="<?= URLHelper::getLink("dispatch.php/course/members?cid=" . $course->id)?>"><?= $course->countMembersWithStatus('autor')?></a></td>
+        <td><a target='_blank' href="<?= URLHelper::getLink("dispatch.php/course/members?cid=" . $course->id)?>">
+                           <?= $course->countMembersWithStatus('autor')?>
+                           <?= $course->admission_turnout ? '/' . $course->admission_turnout : '' ?> 
+            </a>
+        </td>
         <td><?= $course->visible ? 'Ja' : 'Nein' ?></td>
         <td>
             <?php if(StudipNews::GetNewsByRange($course->id, true, true)) : ?>
