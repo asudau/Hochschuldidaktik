@@ -32,8 +32,22 @@ class IndexController extends StudipController {
         
         
         $study_area_zertifikate = StudipStudyArea::find(Hochschuldidaktik::STUDY_AREA_ID );
-        $this->workshops = $study_area_zertifikate->courses;
-
+        $workshops = $study_area_zertifikate->courses;
+        
+        foreach($workshops as $course){
+            if ($course->dates[0]){
+                $workshops_with_date[$course->dates[0]->date] = $course;
+            } else {
+                $this->workshops_without_date[] = $course;
+            }
+        }
+        krsort($workshops_with_date);
+        
+        $this->workshops = [];
+        foreach($workshops_with_date as $date => $course){
+            array_push($this->workshops, $course);
+        }
+        $this->workshops = array_merge($this->workshops, $this->workshops_without_date);
     }
 
     public function showactive_action(){
