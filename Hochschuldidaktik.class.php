@@ -31,6 +31,9 @@ class Hochschuldidaktik extends StudipPlugin implements SystemPlugin
             $item = new Navigation(_('Übersicht'), PluginEngine::getURL($this, array(), 'index'));
             $navigation->addSubNavigation('index', $item);
             
+            $item = new Navigation(_('Teilnehmende'), PluginEngine::getURL($this, array(), 'index/members'));
+            $navigation->addSubNavigation('members', $item);
+            
             Navigation::addItem('tools/hochschuldidaktik', $navigation);  
         }    
     }
