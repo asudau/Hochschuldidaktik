@@ -55,6 +55,18 @@ class IndexController extends StudipController {
     {
         Navigation::activateItem('tools/hochschuldidaktik/members');
         
+        $this->search = isset($_GET['search_user'])? studip_utf8encode($_GET['search_user']) : NULL;
+        
+        $search_user = new SearchWidget($this->url_for('index/members'));
+        $search_user->addNeedle(_('Nutzer'), 'search_user', true, null, null, studip_utf8decode($this->search));
+        Sidebar::get()->addWidget($search_user);
+        
+        $actions = new ActionsWidget();               
+        $actions->addLink(_('Nutzer suchen'),
+                    $this->url_for('index/'),
+                    //$GLOBALS['ABSOLUTE_URI_STUDIP'] . "dispatch.php/calendar/single/edit/" . $this->sem_id,
+                          Icon::create('add', 'clickable'), ["rel" => "get_dialog", "dialog-title" => 'Nutzer suchen']);
+        
         $this->members_courses = self::getMembers();
         
         
@@ -150,11 +162,20 @@ class IndexController extends StudipController {
     }
     
     private function getMembers(){
-         $stmt = DBManager::get()->prepare("SELECT seminar_user.user_id, seminar_user.Seminar_id from seminare "
+        
+        if (!$this->search){
+            $this->search = '%%%';
+        }
+         $stmt = DBManager::get()->prepare("SELECT seminar_user.user_id, seminar_user.Seminar_id, auth_user_md5.Vorname, auth_user_md5.Nachname from seminare "
                  . "LEFT JOIN seminar_user USING(Seminar_id)"
+                 . "LEFT JOIN auth_user_md5 USING(user_id)"
                  . "WHERE seminare.Name LIKE '%Hochschuldidaktische Qualifizierung%' "
-                 . "AND seminar_user.status = 'autor' ");
-        $stmt->execute();
+                 . "AND seminar_user.status = 'autor' "
+                 . "AND (auth_user_md5.Nachname LIKE :input "
+                 . "OR auth_user_md5.Vorname LIKE :input "
+                 . "OR auth_user_md5.username LIKE :input)"
+                 . "ORDER BY auth_user_md5.Nachname");
+        $stmt->execute([':input' => '%' . $this->search . '%']);
         $member_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         //$i = 0;
         $members_courses = []; //new SimpleORMapCollection();
