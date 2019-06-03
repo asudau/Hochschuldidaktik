@@ -37,6 +37,9 @@
        <th data-sort="false" style='width:20%'>
            <?= _('Ankündigungen') ?>
         </th>
+        <th data-sort="false" style='width:5%'>
+           <?= _('Aktionen') ?>
+        </th>
        
       
     </tr>
@@ -87,6 +90,7 @@
                 </a>
             </div></br>
         </td>
+        <td><a title='Abrechnung TN-Beiträge' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_fees/" . $course->id)?>"><?= Icon::create('euro', 'clickable') ?></td>
     </tr>
         <? endforeach ?>
     </tbody>

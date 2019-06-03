@@ -24,7 +24,7 @@ class IndexController extends StudipController {
 //        
 //        $sidebar->addWidget($navcreate);
         $this->allworkshops = Course::findBySQL("Name LIKE '%Hochschuldidaktische Qualifizierung%' ");
-        
+        $this->datafield_id_kostenstelle = md5('hd_kostenstelle');
     }
 
     public function index_action()
@@ -186,6 +186,22 @@ class IndexController extends StudipController {
         return $members_courses;
     }
     
+    public function participant_fees_action($course_id){
+        $this->course = Course::find($course_id);
+        $this->course_members = $this->course->getMembersWithStatus('autor');
+        
+    }
+    
+    public function edit_kostenstelle_action($user_id){
+        $this->user_id = $user_id;
+        $localEntries = DataFieldEntry::getDataFieldEntries($user_id);
+        $this->kostenstelle = $localEntries[$this->datafield_id_kostenstelle ];
+        if (Request::get('kostenstelle')){
+            $this->kostenstelle->setValue(Request::get('kostenstelle'));
+            $this->kostenstelle->store();
+            $this->redirect($this->url_for('index/members'));
+        }
+    }
     
     // customized #url_for for plugins
     public function url_for($to = '')

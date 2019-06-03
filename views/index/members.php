@@ -11,6 +11,9 @@
         <th data-sort="htmldata" style='width:15%'>
            <?= _('User') ?>
         </th>
+        <th data-sort="htmldata" style='width:15%'>
+           <?= _('Kostenstelle') ?>
+        </th>
         <th data-sort="htmldata" style='width:5%'>
            <?= _('Anzahl Workshops') ?>
         </th>
@@ -32,6 +35,19 @@
     <tr>
         <? $user = User::find($user_id); ?>
         <td data-sort-value=<?= $user->Nachname ?>><?= $user->Nachname ?>, <?= $user->Vorname ?></td>
+        <td>
+        <? $entries = DataFieldEntry::getDataFieldEntries($user_id); ?>
+         <a  data-dialog="size=auto" href="<?= $controller->url_for("index/edit_kostenstelle/" . $user_id )?>">
+            <?= Icon::create('edit', 'clickable') ?>
+         </a>
+        <? if ($entries[$datafield_id_kostenstelle]->value): ?>
+            <?= substr($entries[$datafield_id_kostenstelle]->value, 0, 9) ?>
+            <? if (strlen($entries[$datafield_id_kostenstelle]->value) > 9): ?>
+            <?= Icon::create('info-circle', 'clickable', array('title'=>$entries[$datafield_id_kostenstelle]->value)) ?>
+            <? endif ?> 
+        <? endif ?> 
+       
+        </td>
         <td data-sort-value=<?= sizeof($sem_ids) ?>><?= sizeof($sem_ids) ?></td>
         <td>
             <? $max_sem = Course::find($sem_ids[0])->start_semester; ?>
