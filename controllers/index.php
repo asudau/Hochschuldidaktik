@@ -43,12 +43,18 @@ class IndexController extends StudipController {
             }
         }
         krsort($workshops_with_date);
+        $one_year_ago = time() - (60*60*24*365);
         
-        $this->workshops = [];
+        $this->recent_workshops = [];
+        $this->allworkshops_sorted = [];
         foreach($workshops_with_date as $date => $course){
-            array_push($this->workshops, $course);
+            array_push($this->allworkshops_sorted, $course);
+            if ($date > $one_year_ago){
+                array_push($this->recent_workshops, $course);
+            }
         }
-        $this->workshops = array_merge($this->workshops, $this->workshops_without_date);
+        $this->workshops = array_merge($this->allworkshops_sorted, $this->workshops_without_date);
+        $this->workshops = array_merge($this->recent_workshops, $this->workshops_without_date);
     }
     
      public function members_action()
