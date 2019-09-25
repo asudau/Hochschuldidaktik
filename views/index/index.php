@@ -31,6 +31,9 @@
         <th data-sort="false">
            <?= _('Teilnehmende/Max') ?>
         </th>
+        <th data-sort="false">
+            <?= _('Anmeldeset') ?>
+        </th>
         <th data-sort="text" style='width:5%'>
            <?= _('Sichtbar') ?>
         </th>
@@ -73,6 +76,27 @@
                            <?= $course->admission_turnout ? '/' . $course->admission_turnout : '' ?> 
             </a>
         </td>
+        <td>
+            <a target="_blank" href="<?=URLHelper::getLink("dispatch.php/course/admission/", ['cid' => $course->id]) ?>">
+            <? $seminar = new Seminar($course->id); ?>
+            <? $courseset = $seminar->getCourseSet(); ?>
+            <? if ($courseset && $courseset->hasAdmissionRule('TimedAdmission')): ?>
+            <?= Icon::create('accept', Icon::ROLE_STATUS_GREEN, ['title' => 'Anmeldung möglich bis ' . date("d.m.Y", $courseset->getAdmissionRule('TimedAdmission')->getEndTime())]) ?>
+            <? else : ?>
+            <?= Icon::create('decline', Icon::ROLE_STATUS_RED, ['title' => 'Anmeldezeitraum nicht konfiguriert']) ?>
+            <? endif ?>
+            /
+            <? if ($courseset && $courseset->hasAdmissionRule('ParticipantRestrictedAdmission')) : ?>
+                <? if ($courseset->getAdmissionRule('ParticipantRestrictedAdmission')->getDistributionTime() == 0) : ?>
+                           <?= Icon::create('accept', Icon::ROLE_STATUS_GREEN, ['title' => 'TN-Zahl begrenzt auf ' . $course->admission_turnout]) ?>
+                <? else : ?>
+                    <?= Icon::create('decline', Icon::ROLE_STATUS_RED, ['title' => 'Es wurde ein Zeitpunkt für die Platzverteilugn konfiguriert. Das soll nicht so sein.']) ?>
+                <? endif ?>
+            <? else :?>
+                <?= Icon::create('decline', Icon::ROLE_STATUS_RED, ['title' => 'TN-Zahl nicht begrenzt']) ?>
+            <? endif ?>
+            </a>
+        
         <td><?= $course->visible ? 'Ja' : 'Nein' ?></td>
         <td>
             <?php if(StudipNews::GetNewsByRange($course->id, true, true)) : ?>
@@ -90,7 +114,10 @@
                 </a>
             </div></br>
         </td>
-        <td><a title='Abrechnung TN-Beiträge' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_fees/" . $course->id)?>"><?= Icon::create('euro', 'clickable') ?></td>
+        <td>
+            <a title='Abrechnung TN-Beiträge' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_fees/" . $course->id)?>"><?= Icon::create('euro', 'clickable') ?>
+            <a title='Workshop kopieren' data-dialog="size=medium" href="<?=URLHelper::getLink("dispatch.php/course/wizard/copy/" . $course->id) ?>"><?= Icon::create('seminar+add', 'clickable') ?>
+            </td>
     </tr>
         <? endforeach ?>
     </tbody>
