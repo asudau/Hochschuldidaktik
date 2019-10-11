@@ -26,14 +26,27 @@ class IndexController extends StudipController {
 //                              Icon::create('seminar+add', 'clickable'))->asDialog('size=big');
 //        
 //        $sidebar->addWidget($navcreate);
-        $this->allworkshops = Course::findBySQL("Name LIKE '%Hochschuldidaktische Qualifizierung%' ");
+        $this->allworkshops = Course::findBySQL("Name LIKE '%Hochschuldidaktische Qualifizierung%' AND Name NOT LIKE '%Multiplikator%'");
         $this->datafield_id_kostenstelle = md5('hd_kostenstelle');
     }
 
-    public function index_action()
+    public function index_action($selection = NULL)
     {
         Navigation::activateItem('tools/hochschuldidaktik/index');
-        
+        $views = new ViewsWidget();
+        $views->addLink(_('Workshops der letzten 12 Monate'),
+                        $this->url_for('index'))
+              ->setActive($action === 'index');
+        $views->addLink(_('Alle Workshops'),
+                        $this->url_for('index/index/all'))
+              ->setActive($action == 'index');
+         $views->addLink(_('Workshops ohne Termin'),
+                        $this->url_for('index/index/no_dates'))
+              ->setActive($action == 'index');
+        $views->addLink(_('Organisatorische Veranstaltungen'),
+                        $this->url_for('index/index/special'))
+              ->setActive($action == 'index');
+        Sidebar::get()->addWidget($views);
         
         $study_area_zertifikate = StudipStudyArea::find(Hochschuldidaktik::STUDY_AREA_ID );
         //$workshops = $study_area_zertifikate->courses;
@@ -46,18 +59,23 @@ class IndexController extends StudipController {
             }
         }
         krsort($workshops_with_date);
-        $one_year_ago = time() - (60*60*24*365);
-        
         $this->recent_workshops = [];
         $this->allworkshops_sorted = [];
-        foreach($workshops_with_date as $date => $course){
-            array_push($this->allworkshops_sorted, $course);
-            if ($date > $one_year_ago){
-                array_push($this->recent_workshops, $course);
+        
+        if ($selection != 'no_dates'){
+            $one_year_ago = time() - (60*60*24*365);
+            foreach($workshops_with_date as $date => $course){
+                //array_push($this->allworkshops_sorted, $course);
+                if ($selection == 'all' || $date > $one_year_ago){
+                    array_push($this->recent_workshops, $course);
+                }
             }
         }
-        $this->workshops = array_merge($this->allworkshops_sorted, $this->workshops_without_date);
-        $this->workshops = array_merge($this->recent_workshops, $this->workshops_without_date);
+        if ($selection == 'special'){
+            $this->workshops = [Course::find('e7b2ee63e275bb4b8fc864974785b03b')];
+        } else {
+            $this->workshops = array_merge($this->recent_workshops, $this->workshops_without_date);
+        }
     }
     
      public function members_action()

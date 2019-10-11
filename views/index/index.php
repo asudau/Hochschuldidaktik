@@ -4,7 +4,7 @@
 <table class="sortable-table default">
  
     <caption>
-       <?= _('Veranstaltungen') ?>
+       <?= sizeof($workshops) . _(' Veranstaltung(en)') ?>
 
     </caption>
     <thead>
