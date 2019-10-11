@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/../models/ZertifikatsprogrammExamConfirmed.class.php';
+
 class IndexController extends StudipController {
 
     public function __construct($dispatcher)
@@ -197,6 +200,30 @@ class IndexController extends StudipController {
         $this->course_members = $this->course->getMembersWithStatus('autor');
         
     }
+    
+    public function participant_confirm_action($course_id){
+        $this->course = Course::find($course_id);
+        $this->course_members = $this->course->getMembersWithStatus(['autor', 'dozent']);
+        
+    }
+    
+     public function participant_confirm_save_action(){
+        
+        $course_id = Request::get('course_id');
+        $this->course = Course::find($course_id);
+        $this->course_members = Request::optionArray('confirm_exam');
+        foreach($this->course_members as $course_member){
+            $exam_confirmed = ZertifikatsprogrammExamConfirmed::find([$course_id, $course_member]);
+            if (!$exam_confirmed){
+            $exam_confirmed = new ZertifikatsprogrammExamConfirmed([$course_id, $course_member]);
+                $exam_confirmed->store();
+            }  
+        }
+        $message = MessageBox::success(_('Bestätigte Teilnahme gespeichert'));
+        PageLayout::postMessage($message);
+        $this->redirect('index');
+    }
+    
     
     public function edit_kostenstelle_action($user_id){
         $this->user_id = $user_id;

@@ -115,8 +115,15 @@
             </div></br>
         </td>
         <td>
-            <a title='Abrechnung TN-Beiträge' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_fees/" . $course->id)?>"><?= Icon::create('euro', 'clickable') ?>
-            <a title='Workshop kopieren' data-dialog="size=medium" href="<?=URLHelper::getLink("dispatch.php/course/wizard/copy/" . $course->id) ?>"><?= Icon::create('seminar+add', 'clickable') ?>
+            <a title='Abrechnung TN-Beiträge' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_fees/" . $course->id)?>"><?= Icon::create('euro', 'clickable') ?></a>
+            <a title='Teilnahmen bestätigen' data-dialog="size=medium" href="<?= $controller->url_for("index/participant_confirm/" . $course->id)?>">
+                    <? if (ZertifikatsprogrammExamConfirmed::findOneByCourse_id($course->id)) : ?>
+                        <?= Icon::create('accept',  Icon::ROLE_STATUS_GREEN, ['title' => 'Wurde eingetragen']) ?>
+                    <? else: ?>
+                        <?= Icon::create('accept', 'clickable') ?>
+                    <? endif ?>
+            </a>
+            <a title='Workshop kopieren' data-dialog="size=medium" href="<?=URLHelper::getLink("dispatch.php/course/wizard/copy/" . $course->id) ?>"><?= Icon::create('seminar+add', 'clickable') ?></a>
             </td>
     </tr>
         <? endforeach ?>
