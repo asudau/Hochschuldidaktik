@@ -78,9 +78,17 @@ class IndexController extends StudipController {
         }
     }
     
-     public function members_action()
+     public function members_action($selection = NULL)
     {
         Navigation::activateItem('tools/hochschuldidaktik/members');
+         $views = new ViewsWidget();
+        $views->addLink(_('In den letzen Jahren aktiv'),
+                        $this->url_for('index/members'))
+              ->setActive($action === 'members');
+        $views->addLink(_('Alle Teilnehmer*innen'),
+                        $this->url_for('index/members/all'))
+              ->setActive($action === 'members');
+        Sidebar::get()->addWidget($views);
         
         $this->search = isset($_GET['search_user'])? studip_utf8encode($_GET['search_user']) : NULL;
         
@@ -94,7 +102,7 @@ class IndexController extends StudipController {
                     //$GLOBALS['ABSOLUTE_URI_STUDIP'] . "dispatch.php/calendar/single/edit/" . $this->sem_id,
                           Icon::create('add', 'clickable'), ["rel" => "get_dialog", "dialog-title" => 'Nutzer suchen']);
         
-        $this->members_courses = self::getMembers();
+        $this->members_courses = self::getMembers($selection);
         
         
     }
@@ -188,28 +196,55 @@ class IndexController extends StudipController {
         } else return true;
     }
     
-    private function getMembers(){
+    private function getMembers($selection){
         
         if (!$this->search){
             $this->search = '%%%';
         }
-         $stmt = DBManager::get()->prepare("SELECT seminar_user.user_id, seminar_user.Seminar_id, auth_user_md5.Vorname, auth_user_md5.Nachname from seminare "
+         $stmt = DBManager::get()->prepare("SELECT seminar_user.user_id, seminare.start_time, seminare.Name, seminar_user.Seminar_id, auth_user_md5.Vorname, auth_user_md5.Nachname from seminare "
                  . "LEFT JOIN seminar_user USING(Seminar_id)"
                  . "LEFT JOIN auth_user_md5 USING(user_id)"
                  . "WHERE seminare.Name LIKE '%Hochschuldidaktische Qualifizierung%' "
-                 . "AND seminar_user.status = 'autor' "
+                 . "AND seminare.Name NOT LIKE '%Multiplikator%' "
+                 //. "AND seminar_user.status = 'autor' "
                  . "AND (auth_user_md5.Nachname LIKE :input "
                  . "OR auth_user_md5.Vorname LIKE :input "
                  . "OR auth_user_md5.username LIKE :input)"
                  . "ORDER BY auth_user_md5.Nachname");
         $stmt->execute([':input' => '%' . $this->search . '%']);
         $member_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        //$i = 0;
-        $members_courses = []; //new SimpleORMapCollection();
-        //$event_collection->setClassName('Event');
+        $members_courses = []; 
+        
         foreach ( $member_data as $row) {
-            $members_courses[$row['user_id']][] = $row['Seminar_id'];
+            if(!in_array($row['user_id'], ['089316d254a3c0e7e74ad4a2f189ca8a', '23f8d0a297dcc23f292fe7bb358ad280', '50e72c7107ee0fbb6a09e774a95b69a7'])){ //samed, anne, frank
+                $members_courses[$row['user_id']]['courses'][] = [ 'id' => $row['Seminar_id'], 
+                        'name' => $row['Name'],
+                        'beginn' => $row['start_time']
+                    ];
+                $members_courses[$row['user_id']]['latest_course'] = ($row['start_time'] > $members_courses[$row['user_id']]['latest_course']) ? $row['start_time'] : $members_courses[$row['user_id']]['latest_course'];
+                }
         }
+        
+        //falls nicht alle, nur die die in den letzten 5 Jahren in einem Workshop waren
+                    $active_members = [];
+        if ($selection != 'all'){
+            $five_years_ago = time() - (5*60*60*24*365);
+            foreach($members_courses as $uid => $array) {
+                if($array['latest_course'] > $five_years_ago){
+                    $active_members[$uid] = $array;
+                }
+            }
+            $members_courses = $active_members;
+        }
+        
+        //nach aktuellestem Workshopsemester sortieren
+        $sortArray = array();
+        foreach($members_courses as $uid => $array) {
+                $sortArray[$uid] = $array['latest_course'];
+        }
+        array_multisort($sortArray, SORT_DESC, SORT_NUMERIC, $members_courses); 
+        
+ 
         return $members_courses;
     }
     

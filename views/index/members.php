@@ -31,7 +31,7 @@
     </thead>
     
     <tbody>
-    <? foreach ($members_courses as $user_id => $sem_ids) : ?>
+    <? foreach ($members_courses as $user_id => $infos) : ?>
     <tr>
         <? $user = User::find($user_id); ?>
         <td data-sort-value=<?= $user->Nachname ?>><?= $user->Nachname ?>, <?= $user->Vorname ?></td>
@@ -48,21 +48,18 @@
         <? endif ?> 
        
         </td>
-        <td data-sort-value=<?= sizeof($sem_ids) ?>><?= sizeof($sem_ids) ?></td>
+        <td data-sort-value=<?= sizeof($infos['courses']) ?>><?= sizeof($infos['courses']) ?></td>
         <td>
-            <? $max_sem = Course::find($sem_ids[0])->start_semester; ?>
-            <? foreach ($sem_ids as $sem_id) : ?>
+            <? foreach ($infos['courses'] as $sem_info) : ?>
             <div style='margin:3px;'>
-                <? $sem = Course::find($sem_id); ?>
-                <? $max_sem = ($sem->start_semester->beginn > $max_sem->beginn) ? $sem->start_semester : $max_sem; ?>
-                <a title='Zur Veranstaltung' href='<?=URLHelper::getLink("/seminar_main.php?auswahl=" . $sem_id )?>'>
-                    <?= explode('(', $sem->name)[0] ?> (<?= $sem->start_semester->name ?>)
+                <a title='Zur Veranstaltung' href='<?=URLHelper::getLink("/seminar_main.php?auswahl=" . $sem_info['id'] )?>'>
+                    <?= explode('(', $sem_info['name'])[0] ?> (<?= Semester::findOneByBeginn($sem_info['beginn'])->name ?>)
                 </a>
             </div>
              <? endforeach ?>
         </td>
-        <td data-sort-value=<?= $max_sem->beginn ?>>
-           <?= $max_sem->name ?>
+        <td data-sort-value=<?= $infos['latest_course'] ?>>
+           <?= Semester::findOneByBeginn($infos['latest_course'])->name ?>
         </td>
     </tr>
         <? endforeach ?>
