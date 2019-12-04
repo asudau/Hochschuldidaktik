@@ -15,8 +15,7 @@
            <?= _('Kostenstelle') ?>
         </th>
         <th data-sort="htmldata" style='width:5%'>
-           <?= _('Anzahl Workshops') ?>
-        </th>
+           <?= _('Anzahl Bestätigte Leistungen') ?>
         </th>
        <th data-sort="false" style='width:60%'>
            <?= _('Seminare') ?>
@@ -48,21 +47,24 @@
         <? endif ?> 
        
         </td>
-        <td data-sort-value=<?= sizeof($infos['courses']) ?>><?= sizeof($infos['courses']) ?></td>
+        <? $exams_confirmed = ZertifikatsprogrammExamConfirmed::findByUser_id($user_id); ?>
+        <td data-sort-value=<?= sizeof($exams_confirmed) ?>><?=  sizeof($exams_confirmed) ?></td>
         <td>
             <? foreach ($infos['courses'] as $sem_info) : ?>
+            <div>
+                <?= (ZertifikatsprogrammExamConfirmed::find([$sem_info['id'], $user_id ])) ? Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Teilnahme bestätigt')) : '' ?>
+            </div>
             <div style='margin:3px;'>
                 <a title='Zur Veranstaltung' href='<?=URLHelper::getLink("/seminar_main.php?auswahl=" . $sem_info['id'] )?>'>
                     <?= explode('(', $sem_info['name'])[0] ?> (<?= Semester::findOneByBeginn($sem_info['beginn'])->name ?>)
                 </a>
-                <?= (ZertifikatsprogrammExamConfirmed::find([$sem_info['id'], $user_id ])) ? Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Teilnahme bestätigt')) : '' ?>
             </div> 
              <? endforeach ?>
-             <? foreach (ZertifikatsprogrammExamConfirmed::findByUser_id($user_id) as $module) : ?>
+             <? foreach ($exams_confirmed as $module) : ?>
                 <? if ($module->modul) : ?>
                     <div style='margin:3px;'>
-                        <?= $module->modul ?>
                         <?= Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Bestätigt')) ?>
+                        <?= $module->modul ?>
                     </div>
                 <? endif ?>
              <? endforeach ?>
