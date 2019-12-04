@@ -226,7 +226,7 @@ class IndexController extends StudipController {
         }
         
         //falls nicht alle, nur die die in den letzten 5 Jahren in einem Workshop waren
-                    $active_members = [];
+        $active_members = [];
         if ($selection != 'all'){
             $five_years_ago = time() - (5*60*60*24*365);
             foreach($members_courses as $uid => $array) {
@@ -252,6 +252,18 @@ class IndexController extends StudipController {
         $this->course = Course::find($course_id);
         $this->course_members = $this->course->getMembersWithStatus('autor');
         
+    }
+    
+    public function add_exam_action($user_id){
+        $this->user_id = $user_id;
+        if (Request::get('modul_erlaeuterung')){
+            $entry = new ZertifikatsprogrammExamConfirmed([time(), $user_id]);
+            $entry->modul = Request::get('modul_erlaeuterung');
+            $entry->store();
+            $message = MessageBox::success(_('Modul gespeichert'));
+            PageLayout::postMessage($message);
+            $this->redirect('index/members');
+        }
     }
     
     public function participant_confirm_action($course_id){

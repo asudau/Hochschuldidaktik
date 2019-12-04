@@ -55,8 +55,22 @@
                 <a title='Zur Veranstaltung' href='<?=URLHelper::getLink("/seminar_main.php?auswahl=" . $sem_info['id'] )?>'>
                     <?= explode('(', $sem_info['name'])[0] ?> (<?= Semester::findOneByBeginn($sem_info['beginn'])->name ?>)
                 </a>
-            </div>
+                <?= (ZertifikatsprogrammExamConfirmed::find([$sem_info['id'], $user_id ])) ? Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Teilnahme bestätigt')) : '' ?>
+            </div> 
              <? endforeach ?>
+             <? foreach (ZertifikatsprogrammExamConfirmed::findByUser_id($user_id) as $module) : ?>
+                <? if ($module->modul) : ?>
+                    <div style='margin:3px;'>
+                        <?= $module->modul ?>
+                        <?= Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Bestätigt')) ?>
+                    </div>
+                <? endif ?>
+             <? endforeach ?>
+             <div> 
+                 <a  data-dialog="size=auto" href="<?= $controller->url_for("index/add_exam/" . $user_id )?>">
+                <?= Icon::create('add', 'clickable', array('title'=>'(Externe) Bestätigte Leistung nachtragen')) ?>
+                </a>
+             </div>
         </td>
         <td data-sort-value=<?= $infos['latest_course'] ?>>
            <?= Semester::findOneByBeginn($infos['latest_course'])->name ?>
