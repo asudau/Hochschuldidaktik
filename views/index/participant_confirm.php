@@ -1,5 +1,7 @@
 <? use Studip\Button, Studip\LinkButton; ?>
 
+<form class="default" method="post" action="<?=$controller->url_for('index/participant_confirm_save')?>">
+
 <table class="sortable-table default">
  
     <caption>
@@ -20,7 +22,6 @@
     </thead>
     
     <tbody>
-        <form class="default" method="post" action="<?=$controller->url_for('index/participant_confirm_save')?>">
             <input type="hidden" name="course_id" value="<?= $course->id?>" >
 
             <? foreach ($course_members as $member) : ?>
@@ -32,13 +33,14 @@
                     </td>
                 </tr>
             <? endforeach ?>
-             <footer data-dialog-button>
-                <?= Button::createAccept(_('Übernehmen'), 'submit')  ?>
-            </footer>
-        </form>
+        
     
     </tbody>
 </table>
 
+<footer data-dialog-button>
+    <?= Button::create(_('Übernehmen')) ?>
+</footer>
+</form>
 
 

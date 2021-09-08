@@ -52,9 +52,10 @@
         <td>
             <? foreach ($infos['courses'] as $sem_info) : ?>
             <div>
-                <?= (ZertifikatsprogrammExamConfirmed::find([$sem_info['id'], $user_id ])) ? Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Teilnahme bestätigt')) : '' ?>
-            </div>
-            <div style='margin:3px;'>
+                <?= (ZertifikatsprogrammExamConfirmed::find([$sem_info['id'], $user_id ])) ? 
+                    Icon::create('accept', Icon::ROLE_ACCEPT, array('title'=>'Teilnahme bestätigt')) : 
+                    Icon::create('question-circle', Icon::ROLE_CLICKABLE, array('title'=>'Teilnahme noch nicht digital bestätigt'))
+                ?>
                 <a title='Zur Veranstaltung' href='<?=URLHelper::getLink("/seminar_main.php?auswahl=" . $sem_info['id'] )?>'>
                     <?= explode('(', $sem_info['name'])[0] ?> (<?= Semester::findOneByBeginn($sem_info['beginn'])->name ?>)
                 </a>
