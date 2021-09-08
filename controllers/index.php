@@ -32,7 +32,7 @@ class IndexController extends StudipController {
 
     public function index_action($selection = NULL)
     {
-        Navigation::activateItem('tools/hochschuldidaktik/index');
+        Navigation::activateItem('contents/hochschuldidaktik/index');
         $views = new ViewsWidget();
         $views->addLink(_('Workshops der letzten 12 Monate'),
                         $this->url_for('index'))
@@ -80,7 +80,7 @@ class IndexController extends StudipController {
     
      public function members_action($selection = NULL)
     {
-        Navigation::activateItem('tools/hochschuldidaktik/members');
+        Navigation::activateItem('contents/hochschuldidaktik/members');
          $views = new ViewsWidget();
         $views->addLink(_('In den letzen Jahren aktiv'),
                         $this->url_for('index/members'))
@@ -90,10 +90,10 @@ class IndexController extends StudipController {
               ->setActive($action === 'members');
         Sidebar::get()->addWidget($views);
         
-        $this->search = isset($_GET['search_user'])? studip_utf8encode($_GET['search_user']) : NULL;
+        $this->search = isset($_GET['search_user'])? $_GET['search_user'] : NULL;
         
         $search_user = new SearchWidget($this->url_for('index/members'));
-        $search_user->addNeedle(_('Nutzer'), 'search_user', true, null, null, studip_utf8decode($this->search));
+        $search_user->addNeedle(_('Nutzer'), 'search_user', true, null, null, $this->search);
         Sidebar::get()->addWidget($search_user);
         
         $actions = new ActionsWidget();               
