@@ -62,6 +62,15 @@
                     <br/>
                     <?=  date('d.m.Y, H:i', $course->dates[1]->date) . '-' . date('H:i', $course->dates[1]->end_time) . ' Uhr' ?>
                     <?=  $course->dates[1]->raum  ? '(' . $course->dates[1]->raum . ') <br/>'  : '' ?>
+                    <?=  $course->dates[1]->room_booking ? '(' . $course->dates[1]->room_booking->resource->getName() . ') <br/>' : '' ?>
+
+                    <?php if ($course->dates[2]) : ?>
+                    <br/>
+                    <?=  date('d.m.Y, H:i', $course->dates[2]->date) . '-' . date('H:i', $course->dates[2]->end_time) . ' Uhr' ?>
+                    <?=  $course->dates[2]->raum  ? '(' . $course->dates[2]->raum . ') <br/>'  : '' ?>
+                    <?=  $course->dates[2]->room_booking ? '(' . $course->dates[2]->room_booking->resource->getName() . ') <br/>' : '' ?>
+                    <? endif ?>
+                <? endif ?>
                     <?=  $course->dates[1]->room_booking ? '(' . $course->dates[1]->room_booking->resource->name . ') <br/>' : '' ?>
              <? endif ?>
             <? else : ?>
