@@ -57,12 +57,12 @@
             <?php if ($course->dates[0]) : ?>
                <?=  date('d.m.Y, H:i', $course->dates[0]->date) . '-' . date('H:i', $course->dates[0]->end_time) . ' Uhr' ?>
                     <?=  $course->dates[0]->raum  ? '(' . $course->dates[0]->raum . ') <br/>' : '' ?>
-                    <?=  $course->dates[0]->room_assignment ? '(' . $course->dates[0]->room_assignment->resource->getName() . ') <br/>' : '' ?>
+                    <?=  $course->dates[0]->room_booking ? '(' . $course->dates[0]->room_booking->resource->name . ') <br/>' : '' ?>
                    <?php if ($course->dates[1]) : ?>
                     <br/>
                     <?=  date('d.m.Y, H:i', $course->dates[1]->date) . '-' . date('H:i', $course->dates[1]->end_time) . ' Uhr' ?>
                     <?=  $course->dates[1]->raum  ? '(' . $course->dates[1]->raum . ') <br/>'  : '' ?>
-                    <?=  $course->dates[1]->room_assignment ? '(' . $course->dates[1]->room_assignment->resource->getName() . ') <br/>' : '' ?>
+                    <?=  $course->dates[1]->room_booking ? '(' . $course->dates[1]->room_booking->resource->name . ') <br/>' : '' ?>
              <? endif ?>
             <? else : ?>
             <?= 'Keine Termine'?>
